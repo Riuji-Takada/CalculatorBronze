@@ -13,11 +13,24 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MainActivity extends AppCompatActivity {
     private final String END_WITH_NUMBER_REGEX = "^.*[0-9]$";
-    private final String ONLY_NUMBERS_REGEX = "^[0-9]+$";
+    private final String CONTAINS_ONLY_NUMBERS_REGEX = "^[0-9]+$";
+
     private Toast lastToast;
     private TextView formulaText;
+
+    private String additionOperator;
+    private String subtractionOperator;
+    private String multiplicationOperator;
+    private String divisionOperator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +45,15 @@ public class MainActivity extends AppCompatActivity {
 
         formulaText = findViewById(R.id.formula);
 
+        initializeButtonListeners();
+
+        additionOperator = getString(R.string.addition_operator);
+        subtractionOperator = getString(R.string.subtraction_operator);
+        multiplicationOperator = getString(R.string.multiplication_operator);
+        divisionOperator = getString(R.string.division_operator);
+    }
+
+    public void initializeButtonListeners() {
         // 数値ボタンのイベントリスナー登録
         findViewById(R.id.zero_button).setOnClickListener(numberButtonListener);
         findViewById(R.id.one_button).setOnClickListener(numberButtonListener);
@@ -60,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
             Button pressedButton = (Button) v;
             CharSequence pressedNumber = pressedButton.getText();
 
-            String formula =  formulaText.getText().toString();
+            String formula = formulaText.getText().toString();
 
-            if(formula.equals("0")) {
+            if (formula.equals("0")) {
                 formulaText.setText("");
             }
 
@@ -78,14 +100,14 @@ public class MainActivity extends AppCompatActivity {
 
             String currentFormula = formulaText.getText().toString();
 
-            if(currentFormula.isEmpty() || currentFormula.equals("0")) {
+            if (currentFormula.isEmpty()) {
                 showInvalidFormulaToast();
                 return;
             }
 
-            boolean endsWithNumber= currentFormula.matches(END_WITH_NUMBER_REGEX);
+            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
 
-            if(endsWithNumber) {
+            if (endsWithNumber) {
                 formulaText.append(operator);
             } else {
                 CharSequence newFormula = currentFormula.substring(0, currentFormula.length() - 1) + operator;
@@ -108,21 +130,28 @@ public class MainActivity extends AppCompatActivity {
             String currentFormula = formulaText.getText().toString();
 
             boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
-            boolean hasOnlyNumbers = currentFormula.matches(ONLY_NUMBERS_REGEX);
+            boolean hasOnlyNumbers = currentFormula.matches(CONTAINS_ONLY_NUMBERS_REGEX);
 
-            if(currentFormula.isEmpty()
+            if (currentFormula.isEmpty()
                     || hasOnlyNumbers
                     || !endsWithNumber) {
                 showInvalidFormulaToast();
                 return;
             }
 
+            String result = evaluateFormula(currentFormula);
 
+            formulaText.setText(result);
         }
     };
 
+    private List<String> splitFormula(String formula, String regex) {
+        String[] splitedString = formula.split(regex);
+        return new ArrayList<>(Arrays.asList(splitedString));
+    }
+
     private void showInvalidFormulaToast() {
-        if(lastToast != null) {
+        if (lastToast != null) {
             lastToast.cancel();
         }
 
@@ -134,7 +163,64 @@ public class MainActivity extends AppCompatActivity {
         lastToast = toast;
     }
 
-    private double evaluateFormula(CharSequence formula) {
+    private String evaluateFormula(String formula) {
+        final int SIGNIFICANT_DIGITS = 15;
+        final String NUMBER_REGEX = "[0-9]+";
+        final String NON_NUMBER_REGEX = "[^0-9]";
 
+        List<String> numbersAsString = splitFormula(formula, NON_NUMBER_REGEX);
+        List<BigDecimal> numbers = numbersAsString.stream().map(s -> new BigDecimal(s.trim())).collect(Collectors.toList());
+        List<String> operators = splitFormula(formula, NUMBER_REGEX);
+
+        // 演算子リストの先頭には空要素が入るため、削除
+        if (!operators.isEmpty() && operators.get(0).isEmpty()) {
+            operators.remove(0);
+        }
+
+        BigDecimal minusOne = new BigDecimal("-1");
+
+        // マイナスの演算子をプラスに変換する
+        for (int i = 0; i < operators.size(); i++) {
+            if (operators.get(i).equals(subtractionOperator)) {
+                operators.set(i, additionOperator);
+
+                BigDecimal number = numbers.get(i + 1);
+                number = number.multiply(minusOne);
+                numbers.set(i + 1, number);
+            }
+        }
+
+        int i = 0;
+        while (i < operators.size()) {
+            String operator = operators.get(i);
+
+            if (operator.equals(divisionOperator) || operator.equals(multiplicationOperator)) {
+                BigDecimal result;
+
+                if(operator.equals(divisionOperator)){
+                    // ChatGPT曰く、一般的な電卓の有効桁数は10桁、制度の良いもので15桁とのこと
+                    result = numbers.get(i).divide(numbers.get(i + 1), SIGNIFICANT_DIGITS, RoundingMode.HALF_UP);
+                }else{
+                    result = numbers.get(i).multiply(numbers.get(i + 1));
+                }
+
+                numbers.set(i, result);
+
+                operators.remove(i);
+                numbers.remove(i + 1);
+            } else {
+                i++;
+            }
+        }
+
+        BigDecimal sum = new BigDecimal("0.0");
+        for(BigDecimal number : numbers) {
+            sum = sum.add(number);
+        }
+
+        // 小数点以下の0を削除
+        sum = sum.stripTrailingZeros();
+
+        return sum.toString();
     }
 }
