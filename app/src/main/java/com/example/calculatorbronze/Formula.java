@@ -11,15 +11,17 @@ import java.util.stream.Collectors;
 public class Formula {
     // 数値の正規表現（正数：〇 負数：〇 整数：〇 小数：〇）
     private final String NUMERIC_TOKEN_REGEX = "^-?\\d+(?:\\.\\d+)?$";
+    // 正数の数値の正規表現（正数：〇 負数：✕ 整数：〇 小数：〇）
     private final String POSITIVE_NUMBER_REGEX = "^\\d+(?:\\.\\d+)?$";
     // 負数の数値の正規表現（正数：✕ 負数：〇 整数：〇 小数：〇）
     private final String NEGATIVE_NUMBER_REGEX = "^-\\d+(?:\\.\\d+)?$";
-    private final String OPERATOR_TOKEN_REGEX = String.format("[%s]",
-            Arrays.stream(Operators.values())
-                    .map(Operators::toString)
-                    .collect(Collectors.joining("")));
-    // 正数の数値の正規表現（正数：〇 負数：✕ 整数：〇 小数：〇）
-
+    private final String PERCENTAGE_REGEX = "^-?\\d+(?:\\.\\d+)?%$";
+    // TODO 自動生成したいんだけどな...
+    private final String OPERATOR_TOKEN_REGEX = "[+\\-*/]";
+    //    private final String OPERATOR_TOKEN_REGEX = String.format("[%s]",
+//            Arrays.stream(Operators.values())
+//                    .map(Operators::toString)
+//                    .collect(Collectors.joining("")));
     private final String NUMBER_IN_PARENTHESES_AT_END = "\\(-\\d+(?:\\.\\d+)?\\)$";
 
     private final String NUMBER_AT_END = "\\d+(?:\\.\\d+)?$";
@@ -50,9 +52,13 @@ public class Formula {
         return number.matches(NEGATIVE_NUMBER_REGEX);
     }
 
+    private boolean isPercentageToken(String token) {
+        return token.matches(PERCENTAGE_REGEX);
+    }
+
 
     public boolean addToken(String token) {
-        if(token.isBlank()) {
+        if (token.isBlank()) {
             return false;
         }
 
@@ -67,7 +73,13 @@ public class Formula {
         return false;
     }
 
-    private boolean addNumericToken(String token) throws IllegalArgumentException {
+    public void removeLastToken() {
+        if(!tokens.isEmpty()) {
+            tokens.remove(tokens.size() - 1);
+        }
+    }
+
+    private boolean addNumericToken(String token) {
         if (tokens.isEmpty()) {
             tokens.add(token);
             return true;
@@ -104,12 +116,12 @@ public class Formula {
         int lastTokenIndex = tokens.size() - 1;
         String previousToken = tokens.get(lastTokenIndex);
 
-        if(isNumericToken(previousToken)){
+        if (isNumericToken(previousToken) || isPercentageToken(previousToken)) {
             tokens.add(token);
             return true;
         }
 
-        if(isOperatorToken(previousToken)){
+        if (isOperatorToken(previousToken)) {
             tokens.set(lastTokenIndex, token);
             return true;
         }
@@ -125,9 +137,9 @@ public class Formula {
         int lastTokenIndex = tokens.size() - 1;
         String lastToken = tokens.get(lastTokenIndex);
 
-        if(isNumericToken(lastToken)) {
+        if (isNumericToken(lastToken)) {
             String newToken = "";
-            if(isPositiveNumber(lastToken)) {
+            if (isPositiveNumber(lastToken)) {
                 newToken = Operators.SUBTRACTION.toString() + lastToken;
             } else {
                 newToken = lastToken.substring(1);
@@ -139,17 +151,41 @@ public class Formula {
         return false;
     }
 
+    public boolean changeLastTokenToPercentage() {
+        if (tokens.isEmpty()) {
+            return false;
+        }
+
+        int lastTokenIndex = tokens.size() - 1;
+        String lastToken = tokens.get(lastTokenIndex);
+
+        if (isNumericToken(lastToken)) {
+            // TODO 定数化か何かをしたい
+            String newToken = lastToken + "%";
+            tokens.set(lastTokenIndex, newToken);
+            return true;
+        }
+
+        if (isPercentageToken(lastToken)) {
+            String newToken = lastToken.substring(0, lastToken.length() - 1);
+            tokens.set(lastTokenIndex, newToken);
+            return true;
+        }
+
+        return false;
+    }
+
     @NonNull
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder formula = new StringBuilder();
 
-        for(String token: tokens) {
-            if(isNegativeNumber(token)) {
+        for (String token : tokens) {
+            if (isNegativeNumber(token)) {
                 token = String.format("(%s)", token);
             } else if (isOperatorToken(token)) {
-                for(Operators operator : Operators.values()) {
-                    if(token.equals(operator.toString())){
+                for (Operators operator : Operators.values()) {
+                    if (token.equals(operator.toString())) {
                         token = operator.getDisplaySymbol();
                     }
                 }

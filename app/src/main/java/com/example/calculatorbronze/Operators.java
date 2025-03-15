@@ -3,8 +3,8 @@ package com.example.calculatorbronze;
 import androidx.annotation.NonNull;
 
 public enum Operators {
-    ADDITION("+", "＋"),
-    SUBTRACTION("-", "－"),
+    ADDITION("+", "+"),
+    SUBTRACTION("-", "-"),
     MULTIPLICATION("*", "×"),
     DIVISION("/", "÷");
 

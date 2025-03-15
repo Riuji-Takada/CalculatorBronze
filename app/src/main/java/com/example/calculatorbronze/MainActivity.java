@@ -24,12 +24,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
-    private final String END_WITH_NUMBER_REGEX = "^.*[0-9]$";
-    private final String CONTAINS_ONLY_NUMBERS_REGEX = "^[0-9]+$";
-
     private Toast lastToast;
     private TextView formulaText;
-
     private Formula formula;
 
     @Override
@@ -70,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.division_button).setOnClickListener(operatorButtonListener);
 
         findViewById(R.id.signal_button).setOnClickListener(signalButtonListener);
+        findViewById(R.id.percent_button).setOnClickListener(percentButtonListener);
         findViewById(R.id.clear_button).setOnClickListener(clearButtonListener);
         findViewById(R.id.all_clear_button).setOnClickListener(allClearButtonListener);
         findViewById(R.id.calc_result_button).setOnClickListener(calcResultButtonListener);
@@ -112,20 +109,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 showInvalidFormulaToast();
             }
-
-//            if (currentFormula.isEmpty()) {
-//                showInvalidFormulaToast();
-//                return;
-//            }
-//
-//            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
-//
-//            if (endsWithNumber) {
-//                formulaText.append(operator);
-//            } else {
-//                CharSequence newFormula = currentFormula.substring(0, currentFormula.length() - 1) + operator;
-//                formulaText.setText(newFormula);
-//            }
         }
     };
 
@@ -139,58 +122,34 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 showInvalidFormulaToast();
             }
-//
-//
-//            String currentFormula = formulaText.getText().toString();
-//
-//            Pattern pattern = Pattern.compile(NUMBER_IN_PARENTHESES_AT_END);
-//            Matcher matcher = pattern.matcher(currentFormula);
-//
-//            String numberPart = "";
-//            String remainingPart = "";
-//
-//            if(matcher.find()) {
-//                numberPart = matcher.group();
-//                remainingPart = currentFormula.substring(0, matcher.start()).trim();
-//
-//                String newFormula = remainingPart + numberPart.substring(2, numberPart.length() - 1);
-//                formulaText.setText(newFormula);
-//
-//                return;
-//            }
-//
-//            pattern = Pattern.compile(NUMBER_AT_END);
-//            matcher = pattern.matcher(currentFormula);
-//
-//            if(matcher.find()) {
-//                numberPart = matcher.group();
-//                remainingPart = currentFormula.substring(0, matcher.start()).trim();
-//
-//                StringBuilder newFormula = new StringBuilder();
-//                newFormula.append(remainingPart);
-//                newFormula.append("(");
-//                newFormula.append(subtractionOperator);
-//                newFormula.append(numberPart);
-//                newFormula.append(")");
-//                formulaText.setText(newFormula.toString());
-//            }
+        }
+    };
+
+    View.OnClickListener percentButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            boolean isSuccess = formula.changeLastTokenToPercentage();
+
+            if(isSuccess) {
+                formulaText.setText(formula.toString());
+            } else {
+                showInvalidFormulaToast();
+            }
         }
     };
 
     View.OnClickListener clearButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String currentFormula = formulaText.getText().toString();
-            if(!currentFormula.isEmpty()) {
-                currentFormula = currentFormula.substring(0,currentFormula.length() -1);
-                formulaText.setText(currentFormula);
-            }
+            formula.removeLastToken();
+            formulaText.setText(formula.toString());
         }
     };
 
     View.OnClickListener allClearButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            formula.clearFormula();
             formulaText.setText("");
         }
     };
@@ -199,21 +158,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String currentFormula = formulaText.getText().toString();
-
-            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
-            boolean hasOnlyNumbers = currentFormula.matches(CONTAINS_ONLY_NUMBERS_REGEX);
-
-            if (currentFormula.isEmpty()
-                    || hasOnlyNumbers
-                    || !endsWithNumber) {
-                showInvalidFormulaToast();
-                return;
-            }
-
-            String result = evaluateFormula(currentFormula);
-
-            formulaText.setText(result);
+//            String currentFormula = formulaText.getText().toString();
+//
+//            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
+//            boolean hasOnlyNumbers = currentFormula.matches(CONTAINS_ONLY_NUMBERS_REGEX);
+//
+//            if (currentFormula.isEmpty()
+//                    || hasOnlyNumbers
+//                    || !endsWithNumber) {
+//                showInvalidFormulaToast();
+//                return;
+//            }
+//
+//            String result = evaluateFormula(currentFormula);
+//
+//            formulaText.setText(result);
         }
     };
 
