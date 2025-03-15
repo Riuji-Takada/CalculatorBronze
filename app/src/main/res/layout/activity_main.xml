@@ -13,198 +13,211 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/formula"
-            android:paddingTop="60sp"
-            android:paddingBottom="20sp"
-            android:paddingRight="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_vertical|end"
             android:paddingLeft="20sp"
-            android:textSize="32sp"
+            android:paddingRight="20sp"
             android:text=""
-            android:gravity="right" />
+            android:textSize="32sp" />
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TableRow>
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
-                    android:id="@+id/clear_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/all_clear_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="AC"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/signal_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textSize="32sp"
-                    android:visibility="invisible"/>
+                    android:text="+/-"
+                    android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/percent_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textSize="32sp"
-                    android:visibility="invisible"/>
+                    android:text="%"
+                    android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/division_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/division_operator"
                     android:textSize="32sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/seven_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="7"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/eight_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="8"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/nine_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="9"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/multiplication_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/multiplication_operator"
                     android:textSize="32sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/four_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="4"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/five_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="5"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/six_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="6"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/subtraction_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/subtraction_operator"
                     android:textSize="32sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/one_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="1"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/two_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="2"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/three_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="3"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/addition_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/addition_operator"
                     android:textSize="32sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/clear_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textSize="32sp"
-                    android:visibility="invisible"/>
+                    android:text="C"
+                    android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/zero_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="0"
                     android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/decimal_point_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textSize="32sp"
-                    android:visibility="invisible"/>
+                    android:text="."
+                    android:textSize="32sp" />
                 <Button
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:id="@+id/calc_result_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="＝"
                     android:textSize="32sp" />
             </TableRow>
         </TableLayout>
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.calculatorbronze;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +19,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,10 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Toast lastToast;
     private TextView formulaText;
 
-    private String additionOperator;
-    private String subtractionOperator;
-    private String multiplicationOperator;
-    private String divisionOperator;
+    private Formula formula;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +43,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        formula = new Formula();
+
         formulaText = findViewById(R.id.formula);
 
         initializeButtonListeners();
-
-        additionOperator = getString(R.string.addition_operator);
-        subtractionOperator = getString(R.string.subtraction_operator);
-        multiplicationOperator = getString(R.string.multiplication_operator);
-        divisionOperator = getString(R.string.division_operator);
     }
 
-    public void initializeButtonListeners() {
+    private void initializeButtonListeners() {
         // 数値ボタンのイベントリスナー登録
         findViewById(R.id.zero_button).setOnClickListener(numberButtonListener);
         findViewById(R.id.one_button).setOnClickListener(numberButtonListener);
@@ -72,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.multiplication_button).setOnClickListener(operatorButtonListener);
         findViewById(R.id.division_button).setOnClickListener(operatorButtonListener);
 
+        findViewById(R.id.signal_button).setOnClickListener(signalButtonListener);
         findViewById(R.id.clear_button).setOnClickListener(clearButtonListener);
+        findViewById(R.id.all_clear_button).setOnClickListener(allClearButtonListener);
         findViewById(R.id.calc_result_button).setOnClickListener(calcResultButtonListener);
     }
 
@@ -80,15 +79,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Button pressedButton = (Button) v;
-            CharSequence pressedNumber = pressedButton.getText();
+            String pressedNumber = pressedButton.getText().toString();
 
-            String formula = formulaText.getText().toString();
+            boolean isSuccess = formula.addToken(pressedNumber);
 
-            if (formula.equals("0")) {
-                formulaText.setText("");
-            }
-
-            formulaText.append(pressedNumber);
+            formulaText.setText(formula.toString());
         }
     };
 
@@ -96,27 +91,104 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Button pressedButton = (Button) v;
-            CharSequence operator = pressedButton.getText();
+            String operator = "";
 
-            String currentFormula = formulaText.getText().toString();
+            int id = pressedButton.getId();
 
-            if (currentFormula.isEmpty()) {
-                showInvalidFormulaToast();
-                return;
+            if(id == R.id.addition_button) {
+                operator = Operators.ADDITION.toString();
+            } else if(id == R.id.subtraction_button) {
+                operator = Operators.SUBTRACTION.toString();
+            } else if(id == R.id.multiplication_button) {
+                operator = Operators.MULTIPLICATION.toString();
+            } else if(id == R.id.division_button) {
+                operator = Operators.DIVISION.toString();
             }
 
-            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
+            boolean isSuccess = formula.addToken(operator);
 
-            if (endsWithNumber) {
-                formulaText.append(operator);
+            if(isSuccess) {
+                formulaText.setText(formula.toString());
             } else {
-                CharSequence newFormula = currentFormula.substring(0, currentFormula.length() - 1) + operator;
-                formulaText.setText(newFormula);
+                showInvalidFormulaToast();
             }
+
+//            if (currentFormula.isEmpty()) {
+//                showInvalidFormulaToast();
+//                return;
+//            }
+//
+//            boolean endsWithNumber = currentFormula.matches(END_WITH_NUMBER_REGEX);
+//
+//            if (endsWithNumber) {
+//                formulaText.append(operator);
+//            } else {
+//                CharSequence newFormula = currentFormula.substring(0, currentFormula.length() - 1) + operator;
+//                formulaText.setText(newFormula);
+//            }
+        }
+    };
+
+    View.OnClickListener signalButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            boolean isSuccess = formula.changeLastTokensSignal();
+
+            if(isSuccess) {
+                formulaText.setText(formula.toString());
+            } else {
+                showInvalidFormulaToast();
+            }
+//
+//
+//            String currentFormula = formulaText.getText().toString();
+//
+//            Pattern pattern = Pattern.compile(NUMBER_IN_PARENTHESES_AT_END);
+//            Matcher matcher = pattern.matcher(currentFormula);
+//
+//            String numberPart = "";
+//            String remainingPart = "";
+//
+//            if(matcher.find()) {
+//                numberPart = matcher.group();
+//                remainingPart = currentFormula.substring(0, matcher.start()).trim();
+//
+//                String newFormula = remainingPart + numberPart.substring(2, numberPart.length() - 1);
+//                formulaText.setText(newFormula);
+//
+//                return;
+//            }
+//
+//            pattern = Pattern.compile(NUMBER_AT_END);
+//            matcher = pattern.matcher(currentFormula);
+//
+//            if(matcher.find()) {
+//                numberPart = matcher.group();
+//                remainingPart = currentFormula.substring(0, matcher.start()).trim();
+//
+//                StringBuilder newFormula = new StringBuilder();
+//                newFormula.append(remainingPart);
+//                newFormula.append("(");
+//                newFormula.append(subtractionOperator);
+//                newFormula.append(numberPart);
+//                newFormula.append(")");
+//                formulaText.setText(newFormula.toString());
+//            }
         }
     };
 
     View.OnClickListener clearButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String currentFormula = formulaText.getText().toString();
+            if(!currentFormula.isEmpty()) {
+                currentFormula = currentFormula.substring(0,currentFormula.length() -1);
+                formulaText.setText(currentFormula);
+            }
+        }
+    };
+
+    View.OnClickListener allClearButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             formulaText.setText("");
@@ -165,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String evaluateFormula(String formula) {
         final int SIGNIFICANT_DIGITS = 15;
-        final String NUMBER_REGEX = "[0-9]+";
-        final String NON_NUMBER_REGEX = "[^0-9]";
+        final String NUMBER_REGEX = "(?:\\d+\\.\\d*|\\.\\d+|\\d+)";
+        final String NON_NUMBER_REGEX = "[^0-9\\.]";
 
         List<String> numbersAsString = splitFormula(formula, NON_NUMBER_REGEX);
         List<BigDecimal> numbers = numbersAsString.stream().map(s -> new BigDecimal(s.trim())).collect(Collectors.toList());
@@ -181,8 +253,8 @@ public class MainActivity extends AppCompatActivity {
 
         // マイナスの演算子をプラスに変換する
         for (int i = 0; i < operators.size(); i++) {
-            if (operators.get(i).equals(subtractionOperator)) {
-                operators.set(i, additionOperator);
+            if (operators.get(i).equals(Operators.SUBTRACTION.toString())) {
+                operators.set(i, Operators.ADDITION.toString());
 
                 BigDecimal number = numbers.get(i + 1);
                 number = number.multiply(minusOne);
@@ -194,10 +266,10 @@ public class MainActivity extends AppCompatActivity {
         while (i < operators.size()) {
             String operator = operators.get(i);
 
-            if (operator.equals(divisionOperator) || operator.equals(multiplicationOperator)) {
+            if (operator.equals(Operators.DIVISION.toString()) || operator.equals(Operators.MULTIPLICATION.toString())) {
                 BigDecimal result;
 
-                if(operator.equals(divisionOperator)){
+                if(operator.equals(Operators.DIVISION.toString())){
                     // ChatGPT曰く、一般的な電卓の有効桁数は10桁、制度の良いもので15桁とのこと
                     result = numbers.get(i).divide(numbers.get(i + 1), SIGNIFICANT_DIGITS, RoundingMode.HALF_UP);
                 }else{

@@ -2,7 +2,7 @@
     <string name="app_name">CalculatorBronze</string>
     <string name="division_operator">÷</string>
     <string name="multiplication_operator">×</string>
-    <string name="subtraction_operator">－</string>
-    <string name="addition_operator">＋</string>
+    <string name="subtraction_operator">-</string>
+    <string name="addition_operator">+</string>
     <string name="invalid_formula">無効な式です。</string>
 </resources>
