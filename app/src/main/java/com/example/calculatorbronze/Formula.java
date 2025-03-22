@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Formula {
 //    private final String NUMBER_IN_PARENTHESES_AT_END = "\\(-\\d+(?:\\.\\d+)?\\)$";
@@ -56,7 +57,6 @@ public class Formula {
 
         return token.matches(PERCENTAGE_REGEX);
     }
-
 
     public boolean addToken(String token) {
         if (token.isBlank()) {
@@ -270,7 +270,7 @@ public class Formula {
 
         for (String token : tokens) {
             if (isNegativeNumber(token)) {
-                token = String.format("(%s)", token);
+                token = String.format(Locale.getDefault(), "(%,f)", Double.parseDouble(token));
             } else if (isOperatorToken(token)) {
                 for (Operators operator : Operators.values()) {
                     if (token.equals(operator.toString())) {
