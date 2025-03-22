@@ -2,7 +2,6 @@ package com.example.calculatorbronze;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,15 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     private Toast lastToast;
@@ -80,7 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
             boolean isSuccess = formula.addToken(pressedNumber);
 
-            formulaText.setText(formula.toString());
+            if(isSuccess) {
+                formulaText.setText(formula.toString());
+            } else {
+                showInvalidFormulaToast();
+            }
         }
     };
 
@@ -166,11 +160,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-    private List<String> splitFormula(String formula, String regex) {
-        String[] splitedString = formula.split(regex);
-        return new ArrayList<>(Arrays.asList(splitedString));
-    }
 
     private void showInvalidFormulaToast() {
         if (lastToast != null) {

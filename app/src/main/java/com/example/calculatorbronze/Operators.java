@@ -11,7 +11,7 @@ public enum Operators {
     private final String operator;
     private final String displaySymbol;
 
-    private Operators(String operator, String displaySymbol) {
+    Operators(String operator, String displaySymbol) {
         this.operator = operator;
         this.displaySymbol = displaySymbol;
     }

@@ -1,21 +1,15 @@
 package com.example.calculatorbronze;
 
-import android.gesture.OrientedBoundingBox;
-
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Formula {
-    private final String NUMBER_IN_PARENTHESES_AT_END = "\\(-\\d+(?:\\.\\d+)?\\)$";
-    private final String NUMBER_AT_END = "\\d+(?:\\.\\d+)?$";
+//    private final String NUMBER_IN_PARENTHESES_AT_END = "\\(-\\d+(?:\\.\\d+)?\\)$";
+//    private final String NUMBER_AT_END = "\\d+(?:\\.\\d+)?$";
     private final List<String> tokens;
 
     public Formula() {
@@ -145,9 +139,9 @@ public class Formula {
         String lastToken = tokens.get(lastTokenIndex);
 
         if (isNumericToken(lastToken)) {
-            String newToken = "";
+            String newToken;
             if (isPositiveNumber(lastToken)) {
-                newToken = Operators.SUBTRACTION.toString() + lastToken;
+                newToken = Operators.SUBTRACTION + lastToken;
             } else {
                 newToken = lastToken.substring(1);
             }
