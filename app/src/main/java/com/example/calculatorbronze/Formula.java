@@ -195,8 +195,18 @@ public class Formula {
         for (int i = 0; i < tempTokens.size(); i++) {
             String token = tempTokens.get(i);
             if (isPercentageToken(token)) {
-                token = token.replace("%","");
-                Double percentageAsDouble = Double.parseDouble(token) / 100.0;
+                String previousToken = tempTokens.get(i - 1);
+
+                if(previousToken.equals(Operators.SUBTRACTION.toString()) ||
+                        previousToken.equals(Operators.ADDITION.toString())) {
+                    tempTokens.set(i - 1, Operators.MULTIPLICATION.toString());
+
+
+                } else {
+                    token = token.replace("%","");
+                    Double percentageAsDouble = Double.parseDouble(token) / 100.0;
+                }
+
 
                 tempTokens.set(i, percentageAsDouble.toString());
             }
@@ -270,7 +280,8 @@ public class Formula {
 
         for (String token : tokens) {
             if (isNegativeNumber(token)) {
-                token = String.format(Locale.getDefault(), "(%,f)", Double.parseDouble(token));
+                token = String.format(Locale.getDefault(), "(%s)", token);
+//                token = String.format(Locale.getDefault(), "(%,f)", Double.parseDouble(token));
             } else if (isOperatorToken(token)) {
                 for (Operators operator : Operators.values()) {
                     if (token.equals(operator.toString())) {
