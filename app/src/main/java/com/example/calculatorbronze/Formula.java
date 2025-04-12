@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class Formula {
-//    private final String NUMBER_IN_PARENTHESES_AT_END = "\\(-\\d+(?:\\.\\d+)?\\)$";
-//    private final String NUMBER_AT_END = "\\d+(?:\\.\\d+)?$";
     private final List<String> tokens;
 
     public Formula() {
@@ -23,9 +21,16 @@ public class Formula {
 
     private boolean isNumericToken(String token) {
         // 数値の正規表現（正数：〇 負数：〇 整数：〇 小数：〇）
-        final String NUMERIC_TOKEN_REGEX = "^-?\\d+(?:\\.\\d+)?$";
+        final String NUMERIC_TOKEN_REGEX = "^-?\\d+(?:\\.\\d*)?$";
 
         return token.matches(NUMERIC_TOKEN_REGEX);
+    }
+
+    private boolean isIntegerToken(String token) {
+        // 数値の正規表現（正数：〇 負数：〇 整数：〇 小数：×）
+        final String INTEGER_TOKEN_REGEX = "^-?\\d+$";
+
+        return token.matches(INTEGER_TOKEN_REGEX);
     }
 
     private boolean isOperatorToken(String token) {
@@ -38,14 +43,14 @@ public class Formula {
         return token.matches(OPERATOR_TOKEN_REGEX);
     }
 
-    private boolean isPositiveNumber(String number) {
+    private boolean isPositiveNumericToken(String number) {
         // 正数の数値の正規表現（正数：〇 負数：✕ 整数：〇 小数：〇）
         final String POSITIVE_NUMBER_REGEX = "^\\d+(?:\\.\\d+)?$";
 
         return number.matches(POSITIVE_NUMBER_REGEX);
     }
 
-    private boolean isNegativeNumber(String number) {
+    private boolean isNegativeNumericToken(String number) {
         // 負数の数値の正規表現（正数：✕ 負数：〇 整数：〇 小数：〇）
         final String NEGATIVE_NUMBER_REGEX = "^-\\d+(?:\\.\\d+)?$";
 
@@ -140,7 +145,7 @@ public class Formula {
 
         if (isNumericToken(lastToken)) {
             String newToken;
-            if (isPositiveNumber(lastToken)) {
+            if (isPositiveNumericToken(lastToken)) {
                 newToken = Operators.SUBTRACTION + lastToken;
             } else {
                 newToken = lastToken.substring(1);
@@ -177,6 +182,21 @@ public class Formula {
     }
 
     public boolean addDecimalPoint() {
+        if (tokens.isEmpty()) {
+            return false;
+        }
+
+        int lastTokenIndex = tokens.size() - 1;
+        String lastToken = tokens.get(lastTokenIndex);
+
+        final String DECIMAL_POINT = ".";
+
+        if (isIntegerToken(lastToken)) {
+            String newToken = lastToken + DECIMAL_POINT;
+            tokens.set(lastTokenIndex, newToken);
+            return true;
+        }
+
         return false;
     }
 
@@ -288,7 +308,7 @@ public class Formula {
         StringBuilder formula = new StringBuilder();
 
         for (String token : tokens) {
-            if (isNegativeNumber(token)) {
+            if (isNegativeNumericToken(token)) {
                 token = String.format(Locale.getDefault(), "(%s)", token);
 //                token = String.format(Locale.getDefault(), "(%,f)", Double.parseDouble(token));
             } else if (isOperatorToken(token)) {
