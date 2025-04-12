@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.signal_button).setOnClickListener(signalButtonListener);
         findViewById(R.id.percent_button).setOnClickListener(percentButtonListener);
+        findViewById(R.id.decimal_point_button).setOnClickListener(decimalPointButtonListener);
         findViewById(R.id.clear_button).setOnClickListener(clearButtonListener);
         findViewById(R.id.all_clear_button).setOnClickListener(allClearButtonListener);
         findViewById(R.id.calc_result_button).setOnClickListener(calcResultButtonListener);
@@ -137,6 +138,19 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             formula.removeLastToken();
             formulaText.setText(formula.toString());
+        }
+    };
+
+    View.OnClickListener decimalPointButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            boolean isSuccess = formula.addDecimalPoint();
+
+            if(isSuccess) {
+                formulaText.setText(formula.toString());
+            } else {
+                showInvalidFormulaToast();
+            }
         }
     };
 

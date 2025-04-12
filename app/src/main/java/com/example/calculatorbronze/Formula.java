@@ -176,6 +176,10 @@ public class Formula {
         return false;
     }
 
+    public boolean addDecimalPoint() {
+        return false;
+    }
+
     public boolean evaluateFormula() {
         final int SIGNIFICANT_DIGITS = 15;
 
@@ -195,18 +199,24 @@ public class Formula {
         for (int i = 0; i < tempTokens.size(); i++) {
             String token = tempTokens.get(i);
             if (isPercentageToken(token)) {
-                String previousToken = tempTokens.get(i - 1);
+                token = token.replace("%","");
+                BigDecimal percentageAsDouble = new BigDecimal(token).divide(new BigDecimal("100.0"), SIGNIFICANT_DIGITS, RoundingMode.HALF_UP);
 
-                if(previousToken.equals(Operators.SUBTRACTION.toString()) ||
-                        previousToken.equals(Operators.ADDITION.toString())) {
-                    tempTokens.set(i - 1, Operators.MULTIPLICATION.toString());
+                if(i > 0){
+                    String previousToken = tempTokens.get(i - 1);
+
+                    if(previousToken.equals(Operators.SUBTRACTION.toString()) ||
+                            previousToken.equals(Operators.ADDITION.toString())) {
+                        tempTokens.set(i - 1, Operators.MULTIPLICATION.toString());
 
 
-                } else {
-                    token = token.replace("%","");
-                    Double percentageAsDouble = Double.parseDouble(token) / 100.0;
+                        if(previousToken.equals(Operators.SUBTRACTION.toString())){
+                            percentageAsDouble = new BigDecimal("1").subtract(percentageAsDouble);
+                        } else {
+                            percentageAsDouble = new BigDecimal("1").add(percentageAsDouble);
+                        }
+                    }
                 }
-
 
                 tempTokens.set(i, percentageAsDouble.toString());
             }
@@ -263,12 +273,11 @@ public class Formula {
         for(BigDecimal number : numbers) {
             sum = sum.add(number);
         }
-
         // 小数点以下の0を削除
         sum = sum.stripTrailingZeros();
 
         tokens.clear();
-        tokens.add(sum.toString());
+        tokens.add(sum.toPlainString());
 
         return true;
     }
